@@ -1,0 +1,21 @@
+{
+  "name": "dapp-token-gated",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start-chain": "ganache --port 8545 --host 0.0.0.0 --mnemonic 'test test test test test test test test test test test junk'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^6.1.0",
+    "hardhat": "^2.26.1"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.9.5",
+    "ganache": "^7.9.2"
+  }
+}
