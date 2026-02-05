@@ -83,6 +83,18 @@
     <div id="adminPanel" style="display: none; margin-top: 2em">
       <h2>Admin Panel</h2>
 
+      <h3>Mint Membership NFT</h3>
+      <input
+        id="mintAddress"
+        type="text"
+        placeholder="Indirizzo wallet destinatario"
+        style="padding: 10px; width: 320px"
+      />
+      <button id="mintBtn">Mint NFT</button>
+
+      <hr style="margin: 20px 0" />
+
+      <h3>Aggiungi contenuto</h3>
       <input
         id="contentInput"
         type="text"
@@ -135,6 +147,8 @@
         contentInput: document.getElementById("contentInput"),
         addContentBtn: document.getElementById("addContentBtn"),
         adminStatus: document.getElementById("adminStatus"),
+        mintAddress: document.getElementById("mintAddress"),
+        mintBtn: document.getElementById("mintBtn"),
       };
 
       const sampleContents = [
@@ -180,7 +194,7 @@
 
           ui.contentArea.innerHTML = "";
 
-          const owner = await contentGateContract.owner();
+          const owner = await membershipContract.owner();
           if (userAddress.toLowerCase() === owner.toLowerCase()) {
             ui.adminPanel.style.display = "block";
           } else {
@@ -255,6 +269,29 @@
         }
       }
 
+      async function mintMembership() {
+        const to = ui.mintAddress.value.trim();
+
+        if (!ethers.utils.isAddress(to)) {
+          alert("Indirizzo non valido");
+          return;
+        }
+
+        try {
+          const membershipWithSigner = membershipContract.connect(signer);
+          ui.adminStatus.textContent = "⏳ Mint in corso...";
+
+          const tx = await membershipWithSigner.mint(to);
+          await tx.wait();
+
+          ui.adminStatus.textContent = "✅ NFT mintato con successo!";
+          ui.mintAddress.value = "";
+        } catch (err) {
+          console.error("Errore mint:", err);
+          ui.adminStatus.textContent = "❌ Errore durante il mint";
+        }
+      }
+
       function resolveIPFS(uri) {
         if (uri.startsWith("ipfs://")) {
           return uri.replace(
@@ -267,6 +304,7 @@
 
       ui.connectWalletBtn.addEventListener("click", connectWallet);
       ui.addContentBtn.addEventListener("click", addContent);
+      ui.mintBtn.addEventListener("click", mintMembership);
 
       renderApp();
     </script>
