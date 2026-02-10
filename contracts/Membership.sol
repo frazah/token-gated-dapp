@@ -7,8 +7,8 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 
 /**
  * @title Membership
- * @dev Un semplice contratto NFT (ERC721) che rappresenta l'appartenenza a un gruppo.
- * Solo il proprietario del contratto (l'admin) può creare (minare) nuovi NFT.
+ * @dev Contratto NFT (ERC721) che rappresenta l'appartenenza a un gruppo.
+ * Solo il proprietario del contratto può creare mintare nuovi NFT.
  * Ogni NFT è unico e dà diritto ad accedere ai contenuti premium.
  */
 contract Membership is ERC721, Ownable {

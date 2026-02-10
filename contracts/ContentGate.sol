@@ -30,7 +30,7 @@ contract ContentGate is Ownable {
         return contents.length;
     }
 
-    // Funzione per ottenere un contenuto specifico (per frontend)
+    // Funzione per ottenere un contenuto specifico per indice
     function getContent(uint index) public view returns (string memory) {
         require(canAccess(msg.sender), "Non sei membro.");
         require(index < contents.length, "Indice non valido.");
