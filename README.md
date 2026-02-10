@@ -48,14 +48,14 @@ Questa guida garantisce un avvio pulito e funzionante del progetto.
     ```
 3.  **MetaMask:** Installa l'estensione per browser MetaMask.
 
-### Passo 1: Installazione delle Dipendenze
+### Step 1: Installazione delle Dipendenze
 
 Apri un terminale nella cartella principale del progetto ed esegui:
 ```bash
 npm install
 ```
 
-### Passo 2: Avvio della Blockchain Locale (Ganache)
+### Step 2: Avvio della Blockchain Locale (Ganache)
 
 Nel **primo terminale** avvia la blockchain Ganache con il nostro script personalizzato.
 ```bash
@@ -63,7 +63,7 @@ npm run start-chain
 ```
 Vedrai una lista di account di test con le loro chiavi private. **Lascia questo terminale aperto.**
 
-### Passo 3: Deploy degli Smart Contract
+### Step 3: Deploy degli Smart Contract
 
 Apri un **secondo terminale** ed esegui lo script di deploy:
 ```bash
@@ -75,7 +75,7 @@ Questo comando:
 3.  **Assegnerà automaticamente un NFT di prova** ai primi account di test.
 4.  Creerà/aggiornerà il file `frontend/contractInfo.js` con le informazioni necessarie al frontend.
 
-### Passo 4: Configurazione di MetaMask
+### Step 4: Configurazione di MetaMask
 
 1.  **Aggiungi la Rete Ganache a MetaMask:**
     *   `Impostazioni > Reti > Aggiungi rete > Aggiungi una rete manualmente`
@@ -88,7 +88,7 @@ Questo comando:
     *   Nel terminale di Ganache, copia la **chiave privata** del primo account (`(0)`). In MetaMask, importa l'account. Questo sarà l'**Amministratore**.
     *   Fai lo stesso per il secondo e il terzo account (`(1) e (2)`). Questi saranno un **Membro** che possiede già un NFT e un **Non Membro**.
 
-### Passo 5: Avvio del Frontend
+### Step 5: Avvio del Frontend
 
 In un **terzo terminale**:
 ```bash
@@ -97,7 +97,7 @@ python3 -m http.server 8000 --directory frontend
 ```
 
 
-### Passo 6: Come Usare la DApp
+### Step 6: Come Usare la DApp
 
 1. **Accesso Amministratore:**
    * Connettiti con l’account amministratore tramite MetaMask.
