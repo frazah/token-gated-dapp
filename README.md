@@ -44,7 +44,6 @@ Questa guida garantisce un avvio pulito e funzionante del progetto.
 1.  **Node.js:** Assicurati di avere installato Node.js (versione 16 o successiva).
 2.  **Ganache:** Installa Ganache a livello globale. Se non lo hai già fatto, esegui:
     ```bash
-    # Potrebbe essere necessario usare 'sudo' a seconda della configurazione del tuo sistema
     npm install -g ganache
     ```
 3.  **MetaMask:** Installa l'estensione per browser MetaMask.
@@ -58,7 +57,7 @@ npm install
 
 ### Passo 2: Avvio della Blockchain Locale (Ganache)
 
-In un terminale, avvia la blockchain Ganache con il nostro script personalizzato.
+Nel **primo terminale** avvia la blockchain Ganache con il nostro script personalizzato.
 ```bash
 npm run start-chain
 ```
@@ -91,18 +90,18 @@ Questo comando:
 
 ### Passo 5: Avvio del Frontend
 
-Se vuoi, puoi usare un semplice server Python per servire il frontend. In un **terzo terminale**:
+In un **terzo terminale**:
 ```bash
 # Questo comando serve la cartella 'frontend' sulla porta 8000
 python3 -m http.server 8000 --directory frontend
 ```
-Altrimenti, puoi semplicemente aprire il file `frontend/index.html` direttamente nel tuo browser.
+
 
 ### Passo 6: Come Usare la DApp
 
 1. **Accesso Amministratore:**
    * Connettiti con l’account amministratore tramite MetaMask.
-   * Vedrai il pannello admin, dove puoi aggiungere contenuti premium.
+   * Vedrai il pannello admin, dove puoi aggiungere contenuti premium e mintare NFT.
    * Queste operazioni registrano tutto direttamente sulla blockchain locale.
 
 2. **Accesso Utente con NFT:**
