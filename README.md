@@ -11,7 +11,7 @@ La DApp utilizza **due smart contract separati** per distinguere la gestione del
 ### 1. `Membership.sol` (NFT di Accesso)
 
 * Contratto ERC721 standard basato su OpenZeppelin.
-* Ogni NFT rappresenta una **tessera digitale** per accedere ai contenuti.
+* Ogni NFT rappresenta una **membership digitale** per accedere ai contenuti.
 * Solo l’amministratore può creare (`mint`) nuovi NFT e assegnarli agli utenti.
 
 ### 2. `ContentGate.sol` (Contenuti Premium)
