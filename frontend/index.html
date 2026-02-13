@@ -193,55 +193,83 @@
 
       async function renderApp() {
         try {
+          // Recupera eventuali account già connessi al provider (MetaMask)
           const accounts = await provider.listAccounts();
+
+          // Se non ci sono account connessi, resetta la UI allo stato iniziale
           if (accounts.length === 0) {
             ui.connectionStatus.textContent = "Non connesso";
             ui.userAccount.textContent = "N/A";
             ui.membershipStatus.textContent = "N/A";
             ui.contentArea.innerHTML =
               "<p>Connetti il wallet per vedere i contenuti token-gated.</p>";
-            return;
+            return; // Interrompe l'esecuzione perché non possiamo fare chiamate user-specific
           }
 
+          // Ottiene il signer per firmare eventuali transazioni
           signer = provider.getSigner();
+
+          // Recupera l'indirizzo dell'utente connesso
           userAddress = await signer.getAddress();
 
+          // Controllo di sicurezza: evita indirizzi null o non validi
           if (!userAddress || userAddress === ethers.constants.AddressZero) {
             alert("Impossibile leggere il tuo indirizzo. Controlla MetaMask.");
             return;
           }
 
+          // Aggiorna lo stato di connessione nella UI
           ui.connectionStatus.textContent = "Connesso";
           ui.userAccount.textContent = userAddress;
 
+          // Legge il balance NFT dell’utente per verificare la membership
           const balance = await membershipContract.balanceOf(userAddress);
+
+          // Se il balance è maggiore di 0 allora l’utente è membro
           const isMember = balance.gt(0);
 
+          // Aggiorna badge membership dinamicamente
           ui.membershipStatus.innerHTML = isMember
             ? '<span class="pill member">Membro</span>'
             : '<span class="pill not-member">Non Membro</span>';
 
+          // Pulisce l'area contenuti prima di ricaricarla
           ui.contentArea.innerHTML = "";
 
+          // Recupera l’owner del contratto per mostrare eventualmente l’admin panel
           const owner = await membershipContract.owner();
+
+          // Mostra pannello admin solo se l’utente è il proprietario del contratto
           if (userAddress.toLowerCase() === owner.toLowerCase()) {
             ui.adminPanel.style.display = "block";
           } else {
             ui.adminPanel.style.display = "none";
           }
 
+          // Se l’utente è membro può accedere ai contenuti token-gated
           if (isMember) {
-            const contentGateWithSigner = contentGateContract.connect(signer); // importante!
+            // Collega il contratto al signer per eventuali chiamate protette
+            const contentGateWithSigner = contentGateContract.connect(signer);
+
+            // Recupera il numero totale di contenuti salvati on-chain
             const count = await contentGateWithSigner.contentsCount();
 
+            // Se non ci sono contenuti mostra messaggio informativo
             if (count.toNumber() === 0) {
               ui.contentArea.innerHTML =
                 "<p>Nessun contenuto disponibile al momento.</p>";
             } else {
               ui.contentArea.innerHTML = "";
+
+              // Cicla tutti i contenuti salvati nello smart contract
               for (let i = 0; i < count; i++) {
+                // Recupera l'URI del contenuto dalla blockchain
                 let contentUrl = await contentGateWithSigner.getContent(i);
+
+                // Risolve eventuale URI IPFS in URL gateway leggibile dal browser
                 contentUrl = resolveIPFS(contentUrl);
+
+                // Renderizza dinamicamente la card del contenuto
                 ui.contentArea.innerHTML += `
                 <div class="card">
                 <img src="${contentUrl}" alt="Contenuto premium ${i + 1}" />
@@ -251,10 +279,12 @@
               }
             }
           } else {
+            // Se non è membro blocca l'accesso ai contenuti
             ui.contentArea.innerHTML =
               "<p>Non sei membro. Acquista un NFT per accedere ai contenuti.</p>";
           }
         } catch (err) {
+          // Gestione errore generale per evitare crash silenziosi
           console.error("Errore renderApp:", err);
           ui.contentArea.innerHTML =
             "<p>Errore nel recuperare i dati. Controlla la console.</p>";
@@ -262,14 +292,20 @@
       }
 
       async function connectWallet() {
+        // Verifica che MetaMask sia installato
         if (!window.ethereum) {
           alert("MetaMask non installato!");
           return;
         }
+
         try {
+          // Richiede esplicitamente l’autorizzazione agli account dell’utente
           await provider.send("eth_requestAccounts", []);
+
+          // Dopo la connessione aggiorna completamente l’interfaccia
           await renderApp();
         } catch (err) {
+          // Gestione errore in caso l’utente rifiuti o ci siano problemi di rete
           console.error("Errore connectWallet:", err);
           alert(
             "Errore durante la connessione al wallet. Controlla MetaMask e Ganache.",
@@ -278,44 +314,65 @@
       }
 
       async function addContent() {
+        // Legge l’URI inserito dall’admin
         const uri = ui.contentInput.value.trim();
+
+        // Blocca input vuoto
         if (!uri) return alert("Inserisci un link valido");
 
         try {
+          // Collega il contratto al signer per poter inviare transazioni
           const contractWithSigner = contentGateContract.connect(signer);
+
+          // Feedback UI per indicare che la transazione è in pending
           ui.adminStatus.textContent = "⏳ Transazione in corso...";
 
+          // Invia la transazione on-chain per salvare il nuovo contenuto
           const tx = await contractWithSigner.addContent(uri);
+
+          // Attende la conferma nel blocco
           await tx.wait();
 
+          // Aggiorna stato admin
           ui.adminStatus.textContent = "✅ Contenuto aggiunto!";
           ui.contentInput.value = "";
 
-          await renderApp(); // refresh contenuti
+          // Ricarica l'app per mostrare subito il nuovo contenuto
+          await renderApp();
         } catch (err) {
+          // Gestione errore in caso di revert o problemi gas
           console.error(err);
           ui.adminStatus.textContent = "❌ Errore durante l'aggiunta";
         }
       }
-
       async function mintMembership() {
+        // Legge indirizzo destinatario
         const to = ui.mintAddress.value.trim();
 
+        // Verifica validità indirizzo Ethereum
         if (!ethers.utils.isAddress(to)) {
           alert("Indirizzo non valido");
           return;
         }
 
         try {
+          // Collega contratto membership al signer per poter mintare
           const membershipWithSigner = membershipContract.connect(signer);
+
+          // Feedback UI per transazione in corso
           ui.adminStatus.textContent = "⏳ Mint in corso...";
 
+          // Chiama funzione mint dello smart contract
           const tx = await membershipWithSigner.mint(to);
+
+          // Attende conferma blockchain
           await tx.wait();
 
+          // Aggiorna stato admin
           ui.adminStatus.textContent = "✅ NFT mintato con successo!";
           ui.mintAddress.value = "";
         } catch (err) {
+          // Gestione errore (es. non sei owner o gas insufficiente)
           console.error("Errore mint:", err);
           ui.adminStatus.textContent = "❌ Errore durante il mint";
         }
